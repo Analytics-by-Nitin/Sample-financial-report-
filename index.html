@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>March 2024 — Monthly Financial Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #07090f;
+  --s1: #0c1018;
+  --s2: #101520;
+  --s3: #151c28;
+  --border: rgba(234,179,8,0.12);
+  --border2: rgba(255,255,255,0.05);
+  --gold: #eab308;
+  --gold2: #fbbf24;
+  --gold3: #fde68a;
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --purple: #a855f7;
+  --cyan: #06b6d4;
+  --white: #f8fafc;
+  --muted: #475569;
+  --text2: #94a3b8;
+  --text3: #64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Noise texture overlay */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+  opacity:0.4;
+}
+
+/* Grid bg */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(234,179,8,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234,179,8,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.wrap { position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:0 24px 80px; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 0 60px;
+  position: relative;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; letter-spacing: 4px; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 28px;
+  opacity:0; animation: rise 0.7s 0.1s forwards;
+}
+.hero-tag::before {
+  content:'';width:20px;height:1px;background:var(--gold);
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(44px, 8vw, 88px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 8px;
+  opacity:0; animation: rise 0.7s 0.2s forwards;
+}
+.hero h1 span {
+  display: block;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold3) 60%, #fff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero h1 .sub-title {
+  font-size: clamp(22px, 4vw, 40px);
+  color: var(--text2);
+  -webkit-text-fill-color: var(--text2);
+  background: none;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+.hero-meta {
+  display: flex; gap: 32px; flex-wrap: wrap; margin-top: 32px;
+  opacity:0; animation: rise 0.7s 0.3s forwards;
+}
+.hero-meta-item { display:flex; flex-direction:column; gap:4px; }
+.hero-meta-item .lbl { font-size:9px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+.hero-meta-item .val { font-size:13px; color:var(--text2); }
+
+.hero-divider {
+  position:absolute; bottom:0; left:0; right:0;
+  height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0; animation: rise 0.7s 0.5s forwards;
+}
+
+/* ── SECTION ── */
+.section { padding: 72px 0 0; }
+.section-header { margin-bottom: 36px; }
+.section-eyebrow {
+  font-size:9px; letter-spacing:4px; color:var(--gold);
+  text-transform:uppercase; margin-bottom:8px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-eyebrow::after { content:''; flex:1; height:1px; background:var(--border); }
+.section-title {
+  font-family:'Playfair Display', serif;
+  font-size: clamp(20px,3vw,28px);
+  font-weight:700; color:var(--white); letter-spacing:-0.5px;
+}
+
+/* ── KPI STRIP ── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+  background: var(--border2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 60px;
+  opacity:0; animation: rise 0.6s 0.4s forwards;
+}
+.kpi-item {
+  background: var(--s1);
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+.kpi-item:hover { background: var(--s2); }
+.kpi-item::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:3px;
+}
+.kpi-item.rev::before { background: var(--green); }
+.kpi-item.exp::before { background: var(--red); }
+.kpi-item.net::before { background: var(--gold); }
+.kpi-label { font-size:9px; letter-spacing:3px; color:var(--text3); text-transform:uppercase; margin-bottom:12px; }
+.kpi-value {
+  font-family:'Playfair Display',serif;
+  font-size: clamp(24px,3vw,36px);
+  font-weight:900; letter-spacing:-1px; line-height:1;
+}
+.kpi-value.green { color:var(--green); }
+.kpi-value.red { color:var(--red); }
+.kpi-value.gold { color:var(--gold2); }
+.kpi-badge {
+  display:inline-block; margin-top:10px;
+  font-size:9px; padding:3px 10px; border-radius:20px; letter-spacing:1px;
+}
+.kpi-badge.green { background:rgba(34,197,94,0.1); color:var(--green); border:1px solid rgba(34,197,94,0.2); }
+.kpi-badge.red { background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+.kpi-badge.gold { background:rgba(234,179,8,0.1); color:var(--gold2); border:1px solid rgba(234,179,8,0.2); }
+
+/* ── INSIGHTS ── */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 60px;
+}
+.insight-card {
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex; gap: 16px;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  position: relative; overflow: hidden;
+}
+.insight-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.insight-icon {
+  font-size: 22px; flex-shrink: 0;
+  width: 44px; height: 44px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius: 10px; background: var(--s3);
+}
+.insight-body { flex:1; }
+.insight-tag {
+  font-size:8px; letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:6px; font-weight:600;
+}
+.insight-title { font-size:13px; font-weight:600; color:var(--white); margin-bottom:6px; }
+.insight-desc { font-size:11px; color:var(--text2); line-height:1.7; }
+.insight-highlight {
+  display:inline-block; margin-top:8px;
+  font-size:10px; padding:2px 8px; border-radius:4px;
+  font-weight:600; letter-spacing:0.5px;
+}
+
+/* ── CHARTS ── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.chart-card {
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 28px 24px;
+}
+.chart-card.full { grid-column: 1 / -1; }
+.chart-label {
+  font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--gold); margin-bottom:4px; font-weight:600;
+}
+.chart-sublabel { font-size:10px; color:var(--muted); margin-bottom:20px; }
+
+/* ── TABLE ── */
+.table-card {
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+.table-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border2);
+}
+.table-wrap { overflow-x: auto; }
+table { width:100%; border-collapse:collapse; }
+thead th {
+  padding: 12px 20px;
+  text-align:left; font-size:9px; letter-spacing:2px;
+  color:var(--text3); text-transform:uppercase; font-weight:600;
+  background: var(--s2);
+  white-space: nowrap;
+}
+thead th:last-child { text-align:right; }
+tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  transition: background 0.15s;
+}
+tbody tr:hover { background: rgba(234,179,8,0.03); }
+tbody tr:last-child { border-bottom:none; }
+tbody td { padding: 11px 20px; white-space:nowrap; }
+.td-date { color:var(--muted); font-size:11px; }
+.td-name { color:var(--white); font-size:12px; }
+.td-cat { color:var(--text3); font-size:11px; }
+.type-badge {
+  display:inline-block; padding:3px 9px; border-radius:4px;
+  font-size:9px; letter-spacing:1px; font-weight:600;
+}
+.type-badge.rev { background:rgba(34,197,94,0.1); color:var(--green); }
+.type-badge.exp { background:rgba(239,68,68,0.07); color:var(--red); }
+.td-amt { text-align:right; font-weight:600; font-size:12px; }
+.td-amt.pos { color:var(--green); }
+.td-amt.neg { color:var(--red); }
+
+/* ── REVENUE BREAKDOWN ── */
+.rev-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:20px; }
+.rev-item {
+  background:var(--s1); border:1px solid var(--border2);
+  border-radius:10px; padding:20px; display:flex; justify-content:space-between; align-items:center;
+  transition: border-color 0.2s;
+}
+.rev-item:hover { border-color: rgba(34,197,94,0.25); }
+.rev-item-left .name { font-size:12px; color:var(--white); margin-bottom:4px; }
+.rev-item-left .cat { font-size:10px; color:var(--muted); }
+.rev-item-amt { font-family:'Playfair Display',serif; font-size:20px; color:var(--green); font-weight:700; }
+
+/* ── FOOTER ── */
+.footer {
+  margin-top:80px; padding:32px 0;
+  border-top:1px solid var(--border2);
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:12px;
+}
+.footer-left { font-size:10px; color:var(--muted); letter-spacing:2px; }
+.footer-right { font-size:10px; color:var(--text3); }
+
+/* ── ANIMATIONS ── */
+@keyframes rise {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.fade-in { opacity:0; transform:translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+.fade-in.visible { opacity:1; transform:translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .kpi-strip { grid-template-columns:1fr; }
+  .charts-grid { grid-template-columns:1fr; }
+  .rev-grid { grid-template-columns:1fr; }
+  .hero h1 { letter-spacing:-1px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="hero-tag">Confidential &nbsp;·&nbsp; Monthly Financial Report &nbsp;·&nbsp; FY 2023–24</div>
+    <h1>
+      <span>March 2024</span>
+      <span class="sub-title">Financial Summary</span>
+    </h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="lbl">Period</span>
+        <span class="val">01 March – 31 March 2024</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="lbl">Total Transactions</span>
+        <span class="val">26 entries</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="lbl">Currency</span>
+        <span class="val">Indian Rupees (INR)</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="lbl">Status</span>
+        <span class="val" style="color:#ef4444">▼ Net Loss</span>
+      </div>
+    </div>
+    <div class="hero-divider"></div>
+  </div>
+
+  <!-- ── KPI STRIP ── -->
+  <div class="kpi-strip fade-in">
+    <div class="kpi-item rev">
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-value green">₹75,700</div>
+      <div><span class="kpi-badge green">4 income entries</span></div>
+    </div>
+    <div class="kpi-item exp">
+      <div class="kpi-label">Total Expenses</div>
+      <div class="kpi-value red">₹94,598</div>
+      <div><span class="kpi-badge red">22 expense entries</span></div>
+    </div>
+    <div class="kpi-item net">
+      <div class="kpi-label">Net Result</div>
+      <div class="kpi-value gold">₹18,898</div>
+      <div><span class="kpi-badge gold">Net Loss · Mar 2024</span></div>
+    </div>
+  </div>
+
+  <!-- ── KEY INSIGHTS ── -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-eyebrow">Key Insights</div>
+      <div class="section-title">What the numbers are telling you</div>
+    </div>
+
+    <div class="insights-grid">
+
+      <div class="insight-card">
+        <div class="insight-icon">💸</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#ef4444">Major Expense</div>
+          <div class="insight-title">Salary is the biggest cost driver</div>
+          <div class="insight-desc">Staff Salary alone costs ₹30,000 — that's <strong style="color:#fff">31.7% of all expenses</strong>. Combined with the Freelance Designer (₹8,000), people costs total ₹38,000 — nearly 40% of your spend.</div>
+          <span class="insight-highlight" style="background:rgba(239,68,68,0.1);color:#ef4444;">₹30,000 · 31.7% of expenses</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">⚠️</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#f59e0b">Client Concentration Risk</div>
+          <div class="insight-title">92.4% revenue from one client</div>
+          <div class="insight-desc">Gupta & Co. paid ₹70,000 out of ₹75,700 total revenue — <strong style="color:#fff">92.4% dependency on a single client</strong>. If this client delays payment next month, the business faces a cash crisis.</div>
+          <span class="insight-highlight" style="background:rgba(245,158,11,0.1);color:#f59e0b;">High Risk · Diversify ASAP</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">🏢</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#3b82f6">Fixed Cost Burden</div>
+          <div class="insight-title">Fixed costs dominate the P&L</div>
+          <div class="insight-desc">Rent (₹15,000) + Utilities (₹5,999) + Fuel (₹6,000) = <strong style="color:#fff">₹26,999 in fixed costs</strong> (28.5% of expenses). These repeat every month regardless of revenue — a major pressure point.</div>
+          <span class="insight-highlight" style="background:rgba(59,130,246,0.1);color:#3b82f6;">₹26,999 · Monthly Fixed</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">📋</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#a855f7">Tax & Compliance</div>
+          <div class="insight-title">GST payment hit hard this month</div>
+          <div class="insight-desc">₹8,000 GST payment on 30th March pushed the month into deeper loss. Combined with professional fees (₹8,000), <strong style="color:#fff">₹16,000 went to compliance costs</strong> — 16.9% of total expenses.</div>
+          <span class="insight-highlight" style="background:rgba(168,85,247,0.1);color:#a855f7;">₹16,000 · Compliance Costs</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">📉</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#06b6d4">Break-Even Analysis</div>
+          <div class="insight-title">Need ₹18,898 more to break even</div>
+          <div class="insight-desc">Revenue covers only <strong style="color:#fff">80% of expenses</strong>. To break even, either cut ₹18,898 in costs — or add one more client generating at least ₹20,000/month in revenue.</div>
+          <span class="insight-highlight" style="background:rgba(6,182,212,0.1);color:#06b6d4;">Gap: ₹18,898 · 20% shortfall</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">🔍</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#22c55e">Action Required</div>
+          <div class="insight-title">ATM withdrawal needs audit</div>
+          <div class="insight-desc">₹5,000 ATM withdrawal categorised as "Miscellaneous" on 3rd March has <strong style="color:#fff">no business justification</strong>. This should be clarified — it may be a personal expense incorrectly logged.</div>
+          <span class="insight-highlight" style="background:rgba(34,197,94,0.1);color:#22c55e;">₹5,000 · Needs Clarification</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── REVENUE BREAKDOWN ── -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-eyebrow">Income Sources</div>
+      <div class="section-title">All revenue this month</div>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-item">
+        <div class="rev-item-left">
+          <div class="name">Client Payment — Gupta & Co.</div>
+          <div class="cat">Service Income · 10/03/24</div>
+        </div>
+        <div class="rev-item-amt">₹60,000</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-item-left">
+          <div class="name">Payment from Gupta & Co.</div>
+          <div class="cat">Service Income · 15/03/24</div>
+        </div>
+        <div class="rev-item-amt">₹10,000</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-item-left">
+          <div class="name">FD Interest Received</div>
+          <div class="cat">Interest Income · 26/03/24</div>
+        </div>
+        <div class="rev-item-amt">₹4,500</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-item-left">
+          <div class="name">Amazon Refund (Mouse)</div>
+          <div class="cat">Refund / Other Income · 29/03/24</div>
+        </div>
+        <div class="rev-item-amt">₹1,200</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHARTS ── -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-eyebrow">Visual Analysis</div>
+      <div class="section-title">Spending patterns at a glance</div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-label">◈ Expense Breakdown by Category</div>
+        <div class="chart-sublabel">Proportional distribution of all spending</div>
+        <canvas id="pieChart" height="280"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-label">◈ Top 5 Highest Expenditures</div>
+        <div class="chart-sublabel">Largest single spending items this month</div>
+        <canvas id="barChart" height="280"></canvas>
+      </div>
+
+      <div class="chart-card full">
+        <div class="chart-label">◈ Cumulative P&L Trend — March 2024</div>
+        <div class="chart-sublabel">Running balance from day 1 to day 30 · Green = profit zone · Red = loss zone</div>
+        <canvas id="lineChart" height="130"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FULL LEDGER ── -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-eyebrow">Transaction Ledger</div>
+      <div class="section-title">Complete record of all entries</div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div class="chart-label" style="margin-bottom:4px;">◈ All 26 Transactions · March 2024</div>
+        <div class="chart-sublabel" style="margin:0">Sorted chronologically · Revenue highlighted in green</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Particulars</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="ledger"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer fade-in">
+    <div class="footer-left">MARCH 2024 · MONTHLY FINANCIAL REPORT · CONFIDENTIAL</div>
+    <div class="footer-right">All figures in Indian Rupees (INR) · FY 2023–24</div>
+  </div>
+
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────
+const txns = [
+  ["02/03/24","Office Rent (March)","Rent","Expense",15000],
+  ["03/03/24","ATM Withdrawal","Miscellaneous","Expense",5000],
+  ["04/03/24","Printer Ink Purchase","Office Supplies","Expense",1800],
+  ["06/03/24","Uber (Client Meeting)","Travel","Expense",650],
+  ["07/03/24","Office Maintenance & Repair","Maintenance","Expense",1200],
+  ["09/03/24","Team Lunch (Swiggy)","Food / Staff Welfare","Expense",2200],
+  ["10/03/24","Client Payment: Gupta & Co","Service Income","Revenue",60000],
+  ["11/03/24","Metro Travel / Card Recharge","Travel","Expense",300],
+  ["12/03/24","Electricity Bill","Utilities","Expense",2500],
+  ["13/03/24","Domain Renewal (GoDaddy)","Software / Web","Expense",1200],
+  ["15/03/24","Payment from Gupta & Co","Service Income","Revenue",10000],
+  ["16/03/24","Petrol / Fuel (IOCL)","Fuel","Expense",2500],
+  ["17/03/24","Chai & Snacks for Staff","Food / Staff Welfare","Expense",800],
+  ["18/03/24","Office Cleaning Service","Maintenance","Expense",1500],
+  ["19/03/24","Stationery Purchase","Office Supplies","Expense",2200],
+  ["20/03/24","Staff Salary (March)","Salary","Expense",30000],
+  ["21/03/24","Freelance Designer Payment","Professional Fees","Expense",8000],
+  ["22/03/24","Internet / Broadband Bill","Utilities","Expense",999],
+  ["23/03/24","Canva Pro Subscription","Software / Tools","Expense",499],
+  ["24/03/24","Instagram Ads Campaign","Marketing","Expense",5000],
+  ["25/03/24","Bank Maintenance Fees","Bank Charges","Expense",250],
+  ["26/03/24","FD Interest Received","Interest Income","Revenue",4500],
+  ["27/03/24","Drinking Water Cans","Utilities","Expense",1500],
+  ["28/03/24","Delivery Van Fuel (Diesel)","Fuel","Expense",3500],
+  ["29/03/24","Amazon Refund (Mouse)","Refund / Other Income","Revenue",1200],
+  ["30/03/24","GST Payment to Government","Tax Expense","Expense",8000],
+];
+
+// ── Render Ledger ──────────────────────────────────────
+const tbody = document.getElementById("ledger");
+txns.forEach(([date, name, cat, type, amt]) => {
+  const isRev = type === "Revenue";
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="td-date">${date}</td>
+    <td class="td-name">${name}</td>
+    <td class="td-cat">${cat}</td>
+    <td><span class="type-badge ${isRev ? 'rev' : 'exp'}">${type}</span></td>
+    <td class="td-amt ${isRev ? 'pos' : 'neg'}">${isRev ? '+' : '−'}₹${amt.toLocaleString('en-IN')}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ── Chart Config ──────────────────────────────────────
+Chart.defaults.color = '#475569';
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 10;
+
+const palette = ['#eab308','#f59e0b','#22c55e','#3b82f6','#a855f7',
+                 '#f472b6','#06b6d4','#fb923c','#34d399','#60a5fa',
+                 '#e879f9','#facc15','#ef4444','#38bdf8'];
+
+const tooltipStyle = {
+  backgroundColor: '#0c1018',
+  borderColor: 'rgba(234,179,8,0.3)',
+  borderWidth: 1,
+  titleColor: '#fbbf24',
+  bodyColor: '#94a3b8',
+  padding: 12,
+  cornerRadius: 8,
+};
+
+// ── Pie Chart ──────────────────────────────────────────
+const expenses = txns.filter(t => t[3] === "Expense");
+const catMap = {};
+expenses.forEach(([,,cat,,amt]) => { catMap[cat] = (catMap[cat]||0)+amt; });
+const catEntries = Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+
+new Chart(document.getElementById("pieChart"), {
+  type: "doughnut",
+  data: {
+    labels: catEntries.map(e => e[0]),
+    datasets: [{
+      data: catEntries.map(e => e[1]),
+      backgroundColor: palette,
+      borderWidth: 0,
+      hoverOffset: 10,
+    }]
+  },
+  options: {
+    responsive: true,
+    cutout: "58%",
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { boxWidth: 10, padding: 10, font: { size: 9 }, color: '#64748b' }
+      },
+      tooltip: {
+        ...tooltipStyle,
+        callbacks: { label: ctx => `  ₹${ctx.parsed.toLocaleString('en-IN')}` }
+      }
+    }
+  }
+});
+
+// ── Bar Chart ──────────────────────────────────────────
+const top5 = [...expenses].sort((a,b)=>b[4]-a[4]).slice(0,5);
+new Chart(document.getElementById("barChart"), {
+  type: "bar",
+  data: {
+    labels: top5.map(t => t[1].length > 20 ? t[1].slice(0,18)+'…' : t[1]),
+    datasets: [{
+      label: "Amount",
+      data: top5.map(t => t[4]),
+      backgroundColor: palette.slice(0,5),
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipStyle,
+        callbacks: { label: ctx => `  ₹${ctx.parsed.y.toLocaleString('en-IN')}` }
+      }
+    },
+    scales: {
+      x: { grid: { display:false }, ticks: { color:'#475569', font:{size:9} } },
+      y: {
+        grid: { color:'rgba(255,255,255,0.03)' },
+        ticks: { color:'#475569', callback: v => `₹${(v/1000).toFixed(0)}k` }
+      }
+    }
+  }
+});
+
+// ── Line Chart ─────────────────────────────────────────
+const trend = [
+  { x:"05 Mar", y:-16000 },
+  { x:"10 Mar", y:41650  },
+  { x:"15 Mar", y:47850  },
+  { x:"20 Mar", y:14151  },
+  { x:"25 Mar", y:8651   },
+  { x:"30 Mar", y:-18898 },
+];
+new Chart(document.getElementById("lineChart"), {
+  type: "line",
+  data: {
+    labels: trend.map(t => t.x),
+    datasets: [{
+      label: "Cumulative P&L",
+      data: trend.map(t => t.y),
+      borderColor: "#eab308",
+      backgroundColor: ctx => {
+        const g = ctx.chart.ctx.createLinearGradient(0,0,0,250);
+        g.addColorStop(0,"rgba(234,179,8,0.18)");
+        g.addColorStop(1,"rgba(234,179,8,0)");
+        return g;
+      },
+      fill: true,
+      tension: 0.45,
+      borderWidth: 2.5,
+      pointBackgroundColor: trend.map(t => t.y >= 0 ? '#22c55e' : '#ef4444'),
+      pointBorderColor: '#07090f',
+      pointBorderWidth: 2,
+      pointRadius: 7,
+      pointHoverRadius: 10,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipStyle,
+        callbacks: {
+          label: ctx => {
+            const v = ctx.parsed.y;
+            return `  ${v>=0?'+':''}₹${Math.abs(v).toLocaleString('en-IN')} ${v>=0?'(Profit)':'(Loss)'}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid:{display:false}, ticks:{color:'#475569'} },
+      y: {
+        grid: { color:'rgba(255,255,255,0.03)' },
+        ticks: { color:'#475569', callback: v => `₹${(v/1000).toFixed(0)}k` }
+      }
+    }
+  }
+});
+
+// ── Scroll animations ──────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
