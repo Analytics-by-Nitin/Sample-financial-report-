@@ -432,8 +432,8 @@ tbody td { padding: 11px 20px; white-space:nowrap; }
         <div class="insight-icon">🔍</div>
         <div class="insight-body">
           <div class="insight-tag" style="color:#22c55e">Action Required</div>
-          <div class="insight-title">ATM withdrawal needs audit</div>
-          <div class="insight-desc">₹5,000 ATM withdrawal categorised as "Miscellaneous" on 3rd March has <strong style="color:#fff">no business justification</strong>. This should be clarified — it may be a personal expense incorrectly logged.</div>
+          <div class="insight-title">Cash withdrawal needs justification</div>
+          <div class="insight-desc">₹5,000 cash withdrawal on 3rd March has <strong style="color:#fff">no clear business purpose recorded</strong>. Always attach a reason for cash withdrawals — it may be a personal expense incorrectly logged in business books.</div>
           <span class="insight-highlight" style="background:rgba(34,197,94,0.1);color:#22c55e;">₹5,000 · Needs Clarification</span>
         </div>
       </div>
@@ -537,6 +537,77 @@ tbody td { padding: 11px 20px; white-space:nowrap; }
   </div>
 
   <!-- ── FOOTER ── -->
+  <!-- ── FINANCIAL ADVICE ── -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-eyebrow">Financial Advice</div>
+      <div class="section-title">Recommendations for improvement</div>
+    </div>
+    <div class="insights-grid">
+
+      <div class="insight-card">
+        <div class="insight-icon">🎯</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#3b82f6">Priority #1</div>
+          <div class="insight-title">Get at least 2 more clients immediately</div>
+          <div class="insight-desc">92.4% revenue from one client is extremely dangerous. If Gupta & Co. delays by even 15 days, you cannot pay salaries. <strong style="color:#fff">No single client should be more than 40% of your revenue.</strong></div>
+          <span class="insight-highlight" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Risk Reduction · Urgent</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">✂️</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#f59e0b">Cost Cutting</div>
+          <div class="insight-title">Every cash expense must have a reason</div>
+          <div class="insight-desc">₹5,000 cash withdrawal with no recorded purpose is a red flag. <strong style="color:#fff">Implement a rule — every expense above ₹500 must have a bill or written reason.</strong> This alone can save ₹3,000–₹5,000 monthly.</div>
+          <span class="insight-highlight" style="background:rgba(245,158,11,0.1);color:#f59e0b;">Potential Saving · ₹3,000–5,000</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">📅</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#a855f7">Cash Flow</div>
+          <div class="insight-title">Invoice clients on 1st, collect by 10th</div>
+          <div class="insight-desc">Salary falls on 20th March. <strong style="color:#fff">Always invoice clients on 1st of month with 7-day payment terms</strong> so cash is in your account before salary day. Never let payment terms exceed 15 days.</div>
+          <span class="insight-highlight" style="background:rgba(168,85,247,0.1);color:#a855f7;">Cash Flow · Invoice Early</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">💰</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#22c55e">Revenue Growth</div>
+          <div class="insight-title">One new client fixes this loss instantly</div>
+          <div class="insight-desc">You need just ₹18,898 more to break even. <strong style="color:#fff">One new client paying ₹20,000/month turns this loss into a profit immediately.</strong> Focus on acquiring new clients before cutting costs.</div>
+          <span class="insight-highlight" style="background:rgba(34,197,94,0.1);color:#22c55e;">Break Even · Add 1 Client</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">🏦</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#06b6d4">Tax Planning</div>
+          <div class="insight-title">Save GST amount weekly — not monthly</div>
+          <div class="insight-desc">₹8,000 GST hit on 30th March as a surprise. <strong style="color:#fff">Set aside GST amount every week in a separate savings account.</strong> Treat GST money as not yours from day one — it belongs to the government.</div>
+          <span class="insight-highlight" style="background:rgba(6,182,212,0.1);color:#06b6d4;">Tax Planning · Weekly Savings</span>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">📊</div>
+        <div class="insight-body">
+          <div class="insight-tag" style="color:#f472b6">Long Term</div>
+          <div class="insight-title">Set a category budget before month starts</div>
+          <div class="insight-desc">No budget was set this month — expenses just happened. <strong style="color:#fff">Every month fix a spending cap per category.</strong> Example: Marketing ₹3,000 max, Food/Welfare ₹1,500 max. Track actuals vs budget every week.</div>
+          <span class="insight-highlight" style="background:rgba(244,114,182,0.1);color:#f472b6;">Budgeting · Start Next Month</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="footer fade-in">
     <div class="footer-left">MARCH 2024 · MONTHLY FINANCIAL REPORT · CONFIDENTIAL</div>
     <div class="footer-right">All figures in Indian Rupees (INR) · FY 2023–24</div>
@@ -548,7 +619,7 @@ tbody td { padding: 11px 20px; white-space:nowrap; }
 // ── Data ──────────────────────────────────────────────
 const txns = [
   ["02/03/24","Office Rent (March)","Rent","Expense",15000],
-  ["03/03/24","ATM Withdrawal","Miscellaneous","Expense",5000],
+  ["03/03/24","ATM Withdrawal","Cash Withdrawal","Expense",5000],
   ["04/03/24","Printer Ink Purchase","Office Supplies","Expense",1800],
   ["06/03/24","Uber (Client Meeting)","Travel","Expense",650],
   ["07/03/24","Office Maintenance & Repair","Maintenance","Expense",1200],
